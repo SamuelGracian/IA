@@ -16,14 +16,3 @@ private:
 	
 };
 
-class Boid
-{
-public:
-    Boid() = default;
-    virtual ~Boid() = default;
-
-
-
-    Vector2f m_position;
-    Vector2f m_direction;
-};

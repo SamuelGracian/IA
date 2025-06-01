@@ -34,7 +34,13 @@ public:
 
 	bool operator= (const VectorReal& other) const
 	{
-		for (unsigned int i = 0; )
+		for (unsigned int i = 0; i <NumElements;++i)
+		{
+			if (m_data[i] != other.m_data[i])
+			{
+				return false;
+			}
+		}
 	}
 
 	VectorReal operator+ (const VectorReal& other) const
