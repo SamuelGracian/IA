@@ -1,11 +1,23 @@
 #pragma once
+#include <cmath>
+#include <cassert>
+#include <vector>
 
 template <typename Real, unsigned int NumElements>
 
 class VectorReal
 {
 public:
+
 	VectorReal() = default;
+
+	VectorReal(Real x, Real y)
+	{
+		static_assert(NumElements == 2, "This constructor is only valid for 2D vectors.");
+		m_data[0] = x;
+		m_data[1] = y;
+	}
+
 	~VectorReal() = default;
 
 	Real& operator[](unsigned int index)
@@ -22,7 +34,7 @@ public:
 
 	VectorReal& operator [](const VectorReal& other)
 	{
-		if (this != other)d
+		if (this != other)
 		{
 			for (unsigned int i = 0; i < NumElements; ++i)
 			{
@@ -119,20 +131,45 @@ public:
 		return *this;
 	}
 
-	Real Lenght()const
+
+	Real Length() const
 	{
 		Real sum = 0;
-		for (unsigned int = 0; i < NumElements; ++i)
+
+		for (unsigned int i = 0; i < NumElements; ++i)
 		{
 			sum += m_data[i] * m_data[i];
 		}
 		return std::sqrt(sum);
 	}
 
+	void Normalize()
+	{
+		float length = Length();
+		if (length > 0.0f)
+		{
+			for (unsigned int i = 0; i < NumElements; ++i)
+			{
+				m_data[i] /= length;
+			}
+			m_length = length;
+		}
+		else
+		{
+			m_length = 0.0f;
+		}
+	}
+
+	VectorReal GetNormalized() const
+	{
+		VectorReal result = *this;
+		result.Normalize();
+		return result;
+	}
 
 private:
-	Real m_data [NumElements] 
-
+	Real m_data[NumElements];
+	float m_length = 0.0f;
 };
 
 
