@@ -33,7 +33,7 @@ class Boid
 public:
     Boid()
     {
-		m_boidEntity.setRadius(10.0f);
+		m_boidEntity.setRadius(20.0f);
     }
 
     virtual ~Boid() = default;

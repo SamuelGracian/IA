@@ -13,10 +13,12 @@ int main()
 	Boid FleeingBoid;
 
 	SeekerBoid.SetColor(sf::Color::Red);
+
 	FleeingBoid.SetColor(sf::Color::Blue);
 
 	SeekerBoid.SetPosition({ 50.0f, 50.0f });
-	FleeingBoid.SetPosition({ 300.0f, 300.0f });
+
+	FleeingBoid.SetPosition({ 30.0f, 30.0f });
 
 
 	SeekObjective seek;
@@ -46,8 +48,8 @@ int main()
 		flee.target = FleeingBoid.ConvertToVector2f(SeekerBoid.getShape().getPosition());
 		FleeingBoid.SetFleeObjective(flee);
 
-		SeekerBoid.Update();
-		FleeingBoid.Update();
+		//SeekerBoid.Update();
+		//FleeingBoid.Update();
 
 		window.clear();
 		window.draw(SeekerBoid.getShape());
