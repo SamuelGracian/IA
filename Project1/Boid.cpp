@@ -63,7 +63,7 @@ void Boid::Update()
 		m_direction += force;
 		m_direction.Normalize();
 		m_position += m_direction;
-		m_boidEntity.setPosition(sf::Vector2f(m_position.x, m_position.y));
+		m_shape.setPosition(sf::Vector2f(m_position.x, m_position.y));
 }
 
 void Boid::SetSeekObjective(SeekObjective& seek)
@@ -82,20 +82,21 @@ void Boid::SetFleeObjective(FleeObjective& flee)
 
 
 void Boid::SetColor(sf::Color color) {
-	m_boidEntity.setFillColor(color);
+	m_shape.setFillColor(color);
 }
 
 void Boid::SetPosition(const Vector2f& position)
 {
 	m_position = position;
-	m_boidEntity.setPosition(sf::Vector2f(m_position.x, m_position.y));
+	m_shape.setPosition(sf::Vector2f(m_position.x, m_position.y));
 }
 
-Vector2f Boid::ConvertToVector2f(const sf::Vector2f vectorsfml)
+Vector2f Boid::ConvertToVector2f(const sf::Vector2f& vectorsfml)
 {
 	return { vectorsfml.x, vectorsfml.y };
 }
 
-const sf::CircleShape& Boid::getShape() const {
-	return m_boidEntity;
+sf::CircleShape Boid::getShape() const 
+{
+	return m_shape;
 }

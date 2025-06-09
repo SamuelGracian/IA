@@ -33,7 +33,8 @@ class Boid
 public:
     Boid()
     {
-		m_boidEntity.setRadius(20.0f);
+		m_shape.setRadius(20.0f);
+		m_shape.setFillColor(sf::Color::Green);
     }
 
     virtual ~Boid() = default;
@@ -69,9 +70,9 @@ public:
     /// </summary>
     /// <param name="vectorsfml"></param>
     /// <returns></returns>
-    Vector2f ConvertToVector2f(const sf::Vector2f vectorsfml);
+    Vector2f ConvertToVector2f(const sf::Vector2f& vectorsfml);
 
-    const sf::CircleShape& getShape() const;
+    sf::CircleShape getShape() const;
 
 private:
 
@@ -97,7 +98,7 @@ private:
 	SeekObjective m_seekObjective;
 	FleeObjective m_fleeObjective;
 
-    sf::CircleShape m_boidEntity;
+    sf::CircleShape m_shape;
 };
 
 

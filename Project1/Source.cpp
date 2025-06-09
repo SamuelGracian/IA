@@ -31,30 +31,36 @@ int main()
 	flee.fleeForce = 1.0f;
 	FleeingBoid.SetFleeObjective(flee);
 
+
+	sf::CircleShape circle(50.0f);
+	circle.setFillColor(sf::Color::Green);
+
 	while (window.isOpen())
 	{
-	
+
 		while (std::optional <sf::Event> event = window.pollEvent())
 		{
-			if (event -> is<sf::Event::Closed>())
+			if (event->is<sf::Event::Closed>())
 			{
 				window.close();
 			}
 		}
 
-		seek.target = SeekerBoid.ConvertToVector2f(FleeingBoid.getShape().getPosition());
-		SeekerBoid.SetSeekObjective(seek);
 
-		flee.target = FleeingBoid.ConvertToVector2f(SeekerBoid.getShape().getPosition());
-		FleeingBoid.SetFleeObjective(flee);
 
-		//SeekerBoid.Update();
-		//FleeingBoid.Update();
+			seek.target = SeekerBoid.ConvertToVector2f(FleeingBoid.getShape().getPosition());
+			SeekerBoid.SetSeekObjective(seek);
 
-		window.clear();
-		window.draw(SeekerBoid.getShape());
-		window.draw(FleeingBoid.getShape());
-		window.display();
+			flee.target = FleeingBoid.ConvertToVector2f(SeekerBoid.getShape().getPosition());
+			FleeingBoid.SetFleeObjective(flee);
+
+			SeekerBoid.Update();
+			FleeingBoid.Update();
+
+			window.clear();
+			window.draw(SeekerBoid.getShape());
+			window.draw(FleeingBoid.getShape());
+			window.display();
 	}
 
 	return 0;
