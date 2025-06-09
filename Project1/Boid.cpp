@@ -25,6 +25,29 @@ const Vector2f Boid::Flee(const Vector2f& position,
 
 }
 
+void Boid::Wander(float wanderForce)
+{
+	
+}
+
+void Boid::Arrive(const Vector2f& target, float slowRadius)
+{
+	Vector2f Desired = (target - m_position).GetNormalized();
+	float distance = (target - m_position).Length();
+	if (distance < slowRadius)
+	{
+		Desired *= (distance / slowRadius);
+	}
+	else
+	{
+		Desired *= 1.0f; // Full speed
+	}
+	Vector2f force = Desired - m_direction;
+	m_direction += force;
+	m_direction.Normalize();
+	m_position += m_direction;
+}
+
 void Boid::Update()
 {
 	Vector2f force; force[0] = 0; force[1] = 0;
@@ -54,4 +77,17 @@ void Boid::SetFleeObjective(FleeObjective& flee)
 	m_fleeObjective.isActive = flee.isActive;
 	m_fleeObjective.target = flee.target;
 	m_fleeObjective.fleeForce = flee.fleeForce;
+}
+
+
+void Boid::SetColor(sf::Color color) {
+	m_boidEntity.setFillColor(color);
+}
+
+sf::CircleShape& Boid::getShape() {
+	return m_boidEntity;
+}
+
+const sf::CircleShape& Boid::getShape() const {
+	return m_boidEntity;
 }
