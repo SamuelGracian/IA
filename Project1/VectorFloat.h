@@ -167,9 +167,15 @@ public:
 		return result;
 	}
 
+	float x = m_data[0];
+	float y = m_data[1];
+	float z = m_data[2];
+
 private:
 	Real m_data[NumElements];
 	float m_length = 0.0f;
+
+
 };
 
 

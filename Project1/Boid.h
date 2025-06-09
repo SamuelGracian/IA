@@ -40,13 +40,37 @@ public:
 
     void Update();
 
+    /// <summary>
+	/// Sets the seek objective for the boid.
+    /// </summary>
+    /// <param name="seek"></param>
     void SetSeekObjective(SeekObjective& seek);
 
+    /// <summary>
+	/// Sets the flee objective for the boid.
+    /// </summary>
+    /// <param name="flee"></param>
     void SetFleeObjective(FleeObjective& flee);
 
+    /// <summary>
+	/// Sets the color of the boid entity.
+    /// </summary>
+    /// <param name=""></param>
     void SetColor(sf::Color);
 
-    sf::CircleShape& getShape();
+    /// <summary>
+	/// Sets the position of the boid in the world.
+    /// </summary>
+    /// <param name="position"></param>
+    void SetPosition(const Vector2f& position);
+
+    /// <summary>
+	/// Returns the position of the boid in the world.
+    /// </summary>
+    /// <param name="vectorsfml"></param>
+    /// <returns></returns>
+    Vector2f ConvertToVector2f(const sf::Vector2f vectorsfml);
+
     const sf::CircleShape& getShape() const;
 
 private:
