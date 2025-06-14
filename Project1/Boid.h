@@ -10,11 +10,9 @@ struct SeekObjective
 {
     bool isActive = false;
     float seekforce = 0.0f;
-    Vector2f position = { 0.0f,0.0f };
-    Vector2f target = { 0.0f, 0.0f };
-    //____SFML____
-    sf::Vector2f sf_target = { 0.0f,0.0f };
-    sf::Vector2f sf_position = { 0.0f,0.0f };
+    sf::Vector2f position = { 0.0f,0.0f };
+    sf::Vector2f target = { 0.0f, 0.0f };
+
 };
 
 /// <summary>
@@ -23,12 +21,10 @@ struct SeekObjective
 struct FleeObjective
 {
     bool isActive = false;
-	Vector2f target = { 0.0f, 0.0f };
+	sf::Vector2f target = { 0.0f, 0.0f };
 	float fleeForce = 0.0f;
-    Vector2f Position = { 0.0f, 0.0f };
-    //____SFML____
-    sf::Vector2f sf_target = { 0.0f,0.0f };
-    sf::Vector2f sf_position = { 0.0f,0.0f };
+    sf::Vector2f Position = { 0.0f, 0.0f };
+
 };
 
 
@@ -67,45 +63,55 @@ public:
 	/// Sets the position of the boid in the world.
     /// </summary>
     /// <param name="position"></param>
-    void SetPosition(const Vector2f& position);
+    void SetPosition(const sf::Vector2f& position);
 
     /// <summary>
 	/// Returns the position of the boid in the world.
     /// </summary>
     /// <param name="vectorsfml"></param>
     /// <returns></returns>
-    Vector2f ConvertToVector2f(const sf::Vector2f& vectorsfml);
+    sf::Vector2f ConvertToVector2f(const sf::Vector2f& vectorsfml);
 
     sf::CircleShape getShape() const;
+
+    void SetMass(float newMass);
 
 private:
 
     //___________ Seek Behaviors ___________
-    Vector2f Seek(const Vector2f& position,
-        const Vector2f& target,
+    sf::Vector2f Seek(const sf::Vector2f& position,
+        const sf::Vector2f& target,
         float seekforce); const
 
-     Vector2f Flee(const Vector2f& position,
-        const Vector2f& target,
+        sf::Vector2f Flee(const sf::Vector2f& position,
+        const sf::Vector2f& target,
+        float radus,
         float fleeForce);
 
-    void Wander(float wanderForce);
+    sf::Vector2f Wander(float wanderForce);
 
-    void Arrive(const Vector2f& target, float slowRadius);
+    void Arrive(const sf::Vector2f& target, float slowRadius);
+
+    sf::Vector2f Patrol();
+
+    sf::Vector2f PatrolLoop();
 
 
 	//___________ Boid Properties ___________
-    Vector2f m_position;
-    Vector2f m_direction;
+    sf::Vector2f m_position = sf::Vector2f(0,0);
+    sf::Vector2f m_sf_target;
+    sf::Vector2f m_direction = sf::Vector2f(1,0) ;
+
+    sf::Vector2f m_desired;
+
+    float m_mass = 1;
 
 	//___________ Seek Objectives ___________
 	SeekObjective m_seekObjective;
 	FleeObjective m_fleeObjective;
 	//___________ SFML variables ___________
     sf::CircleShape m_shape;
-	sf::Vector2f m_sf_position;
-	sf::Vector2f m_sf_target;
-	sf::Vector2f m_sf_direction;
+
 
 };
 

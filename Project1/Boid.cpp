@@ -1,40 +1,47 @@
 #include "Boid.h"
 
-Vector2f Boid::Seek(const Vector2f& position, const Vector2f& target, float seekforce)
+sf::Vector2f Boid::Seek(const sf::Vector2f& position, const sf::Vector2f& target, float seekforce)
 {
-	Vector2f force;
-	force[0] = 0.0f;
-	force[1] = 0.0f;
+	sf::Vector2f force (0,0);
 
-	Vector2f Desired = (target - position).GetNormalized();
+	sf::Vector2f Desired = (target - position).normalized();
 
 	force = Desired * seekforce;
 	return force;
 }
 
-const Vector2f Boid::Flee(const Vector2f& position,
-		const Vector2f& target, 
+const sf::Vector2f Boid::Flee (const sf::Vector2f& position,
+		const sf::Vector2f& target,
+		float radius,
 		float fleeForce)
 {
-	Vector2f force;
-	force[0] = 0.0f;
-	force[1] = 0.0f;
-	Vector2f Desired = (position - target).GetNormalized();
+	sf::Vector2f force(0, 0);
+	sf::Vector2f diference = position - target;
+	float distance = diference.length();
+	if (distance > radius)
+	{
+		return force;
+	}
+	sf::Vector2f Desired = diference.normalized();
 	force = Desired * fleeForce;
 	return force;
 
 }
 
 
-void Boid::Wander(float wanderForce)
+sf::Vector2f Boid::Wander(float wanderForce)
 {
-	
+	sf::Vector2f force = sf::Vector2f(0, 0);
+
+	sf::Vector2f wanderPosition(rand() % 1280, rand() % 720);
+
+	return Seek(m_position, wanderPosition, wanderForce);
 }
 
-void Boid::Arrive(const Vector2f& target, float slowRadius)
+void Boid::Arrive(const sf::Vector2f& target, float slowRadius)
 {
-	Vector2f Desired = (target - m_position).GetNormalized();
-	float distance = (target - m_position).Length();
+	sf::Vector2f Desired = (target - m_position).normalized();
+	float distance = (target - m_position).length();
 	if (distance < slowRadius)
 	{
 		Desired *= (distance / slowRadius);
@@ -43,28 +50,53 @@ void Boid::Arrive(const Vector2f& target, float slowRadius)
 	{
 		Desired *= 1.0f; // Full speed
 	}
-	Vector2f force = Desired - m_direction;
+	sf::Vector2f force = Desired - m_direction;
 	m_direction += force;
-	m_direction.Normalize();
+	m_direction= m_direction.normalized();
 	m_position += m_direction;
 }
 
 void Boid::Update()
 {
-	Vector2f force; force[0] = 0; force[1] = 0;
+	//sf::Vector2f force(0, 0);
+	m_desired = sf::Vector2f(0, 0);
+
+	if (m_position.x < 0)
+	{
+		m_position.x = 1280;
+	}
+
+	if (m_position.y < 0)
+	{
+		m_position.y = 720;
+	}
+
+	if (m_position.x > 1280)
+	{
+		m_position.x = 0;
+	}
+
+	if (m_position.y > 720)
+	{
+		m_position.y = 0;
+	}
 
 	if (m_seekObjective.isActive)
 	{
-		Vector2f force = Seek(m_position, m_seekObjective.target, m_seekObjective.seekforce);
+		 m_desired += Seek(m_position, m_seekObjective.target, m_seekObjective.seekforce);
 	}
 	if (m_fleeObjective.isActive)
 	{
-		force = Flee(m_position, m_fleeObjective.target, m_fleeObjective.fleeForce);
+		m_desired += Flee(m_position, m_fleeObjective.target, 100, m_fleeObjective.fleeForce);
+		m_desired += Wander(3);
 	}
-		m_direction += force;
-		m_direction.Normalize();
-		m_position += m_direction;
-		m_shape.setPosition(sf::Vector2f(m_position[0], m_position[1]));
+	if (m_desired.length()> 0)
+	{
+		m_direction += m_desired.normalized() * (1.0f / m_mass);
+		m_direction = m_direction.normalized();
+		m_position += m_direction * 0.3f;
+	}
+		m_shape.setPosition(m_position);
 }
 
 void Boid::SetSeekObjective(SeekObjective& seek)
@@ -86,13 +118,13 @@ void Boid::SetColor(sf::Color color) {
 	m_shape.setFillColor(color);
 }
 
-void Boid::SetPosition(const Vector2f& position)
+void Boid::SetPosition(const sf::Vector2f& position)
 {
 	m_position = position;
-	m_shape.setPosition(sf::Vector2f(m_position[0], m_position[1]));
+	m_shape.setPosition(m_position);
 }
 
-Vector2f Boid::ConvertToVector2f(const sf::Vector2f& vectorsfml)
+sf::Vector2f Boid::ConvertToVector2f(const sf::Vector2f& vectorsfml)
 {
 	return { vectorsfml.x, vectorsfml.y };
 }
@@ -100,4 +132,9 @@ Vector2f Boid::ConvertToVector2f(const sf::Vector2f& vectorsfml)
 sf::CircleShape Boid::getShape() const 
 {
 	return m_shape;
+}
+
+void Boid::SetMass(float newMass)
+{
+	m_mass = newMass;
 }
