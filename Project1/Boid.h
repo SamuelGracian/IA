@@ -10,9 +10,12 @@
 struct SeekObjective
 {
     bool isActive = false;
-    Vector2f target = { 0.0f,0.0f };
     float seekforce = 0.0f;
-    Vector2f Position = { 0.0f, 0.0f };
+    Vector2f position = { 0.0f,0.0f };
+    Vector2f target = { 0.0f, 0.0f };
+    //____SFML____
+    sf::Vector2f sf_target = { 0.0f,0.0f };
+    sf::Vector2f sf_position = { 0.0f,0.0f };
 };
 
 /// <summary>
@@ -25,6 +28,9 @@ struct FleeObjective
 	Vector2f target = { 0.0f, 0.0f };
 	float fleeForce = 0.0f;
     Vector2f Position = { 0.0f, 0.0f };
+    //____SFML____
+    sf::Vector2f sf_target = { 0.0f,0.0f };
+    sf::Vector2f sf_position = { 0.0f,0.0f };
 };
 
 
@@ -81,9 +87,9 @@ private:
         const Vector2f& target,
         float seekforce); const
 
-        Vector2f Flee(const Vector2f& position,
-            const Vector2f& target,
-            float fleeForce);
+     Vector2f Flee(const Vector2f& position,
+        const Vector2f& target,
+        float fleeForce);
 
     void Wander(float wanderForce);
 
@@ -97,8 +103,11 @@ private:
 	//___________ Seek Objectives ___________
 	SeekObjective m_seekObjective;
 	FleeObjective m_fleeObjective;
-
+	//___________ SFML variables ___________
     sf::CircleShape m_shape;
-};
+	sf::Vector2f m_sf_position;
+	sf::Vector2f m_sf_target;
+	sf::Vector2f m_sf_direction;
 
+};
 

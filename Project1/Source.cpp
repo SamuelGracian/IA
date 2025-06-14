@@ -24,11 +24,13 @@ int main()
 	SeekObjective seek;
 	seek.isActive = true;
 	seek.seekforce = 1.0f;
+	seek.target = SeekerBoid.ConvertToVector2f(FleeingBoid.getShape().getPosition());
 	SeekerBoid.SetSeekObjective(seek);
 
 	FleeObjective flee;
 	flee.isActive = true;
 	flee.fleeForce = 1.0f;
+	flee.target = FleeingBoid.ConvertToVector2f(SeekerBoid.getShape().getPosition());
 	FleeingBoid.SetFleeObjective(flee);
 
 
@@ -46,13 +48,13 @@ int main()
 			}
 		}
 
-
-
 			seek.target = SeekerBoid.ConvertToVector2f(FleeingBoid.getShape().getPosition());
 			SeekerBoid.SetSeekObjective(seek);
 
 			flee.target = FleeingBoid.ConvertToVector2f(SeekerBoid.getShape().getPosition());
 			FleeingBoid.SetFleeObjective(flee);
+		
+
 
 			SeekerBoid.Update();
 			FleeingBoid.Update();
@@ -62,6 +64,8 @@ int main()
 			window.draw(FleeingBoid.getShape());
 			window.display();
 	}
+
+
 
 	return 0;
 }

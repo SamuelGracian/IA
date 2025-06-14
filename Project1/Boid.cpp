@@ -25,6 +25,7 @@ const Vector2f Boid::Flee(const Vector2f& position,
 
 }
 
+
 void Boid::Wander(float wanderForce)
 {
 	
@@ -63,7 +64,7 @@ void Boid::Update()
 		m_direction += force;
 		m_direction.Normalize();
 		m_position += m_direction;
-		m_shape.setPosition(sf::Vector2f(m_position.x, m_position.y));
+		m_shape.setPosition(sf::Vector2f(m_position[0], m_position[1]));
 }
 
 void Boid::SetSeekObjective(SeekObjective& seek)
@@ -88,7 +89,7 @@ void Boid::SetColor(sf::Color color) {
 void Boid::SetPosition(const Vector2f& position)
 {
 	m_position = position;
-	m_shape.setPosition(sf::Vector2f(m_position.x, m_position.y));
+	m_shape.setPosition(sf::Vector2f(m_position[0], m_position[1]));
 }
 
 Vector2f Boid::ConvertToVector2f(const sf::Vector2f& vectorsfml)

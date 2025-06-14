@@ -11,6 +11,17 @@ public:
 
 	VectorReal() = default;
 
+	VectorReal(const VectorReal& other)
+	{
+		if (this != &other)
+		{
+			for (unsigned int i = 0; i < NumElements; ++i)
+			{
+				m_data[i] = other.m_data[i];
+			}
+		}
+	}
+
 	VectorReal(Real x, Real y)
 	{
 		static_assert(NumElements == 2, "This constructor is only valid for 2D vectors.");
@@ -19,6 +30,18 @@ public:
 	}
 
 	~VectorReal() = default;
+
+	VectorReal& operator=(const VectorReal& other)
+	{
+		if (this != &other)
+		{
+			for (unsigned int i = 0; i < NumElements; ++i)
+			{
+				m_data[i] = other.m_data[i];
+			}
+		}
+		return *this;
+	}
 
 	Real& operator[](unsigned int index)
 	{
@@ -44,7 +67,7 @@ public:
 		return *this;
 	}
 
-	bool operator= (const VectorReal& other) const
+	bool operator== (const VectorReal& other) const
 	{
 		for (unsigned int i = 0; i <NumElements;++i)
 		{
@@ -53,6 +76,12 @@ public:
 				return false;
 			}
 		}
+		return true;
+	}
+
+	bool operator!= (const VectorReal& other) const
+	{
+		return !(*this == other);
 	}
 
 	VectorReal operator+ (const VectorReal& other) const
@@ -166,10 +195,6 @@ public:
 		result.Normalize();
 		return result;
 	}
-
-	float x = m_data[0];
-	float y = m_data[1];
-	float z = m_data[2];
 
 private:
 	Real m_data[NumElements];
