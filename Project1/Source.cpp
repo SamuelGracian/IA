@@ -16,26 +16,24 @@ int main()
 
 	FleeingBoid.SetColor(sf::Color::Blue);
 
-	SeekerBoid.SetPosition({ 50.0f, 50.0f });
+	SeekerBoid.SetPosition({ -500.0f, 500.0f });
 
 	FleeingBoid.SetPosition({ 30.0f, 30.0f });
 
 
 	SeekObjective seek;
 	seek.isActive = true;
-	seek.seekforce = 1.0f;
+	seek.seekforce = 0.1f;
 	seek.target = SeekerBoid.ConvertToVector2f(FleeingBoid.getShape().getPosition());
 	SeekerBoid.SetSeekObjective(seek);
 
 	FleeObjective flee;
 	flee.isActive = true;
-	flee.fleeForce = 1.0f;
+	flee.fleeForce = 0.1f;
 	flee.target = FleeingBoid.ConvertToVector2f(SeekerBoid.getShape().getPosition());
 	FleeingBoid.SetFleeObjective(flee);
 
 
-	sf::CircleShape circle(50.0f);
-	circle.setFillColor(sf::Color::Green);
 
 	while (window.isOpen())
 	{

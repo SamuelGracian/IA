@@ -5,7 +5,6 @@
 
 /// <summary>
 /// Struct to hold seek objective data.
-/// Esta es aquien persigue
 /// </summary>
 struct SeekObjective
 {
@@ -20,7 +19,6 @@ struct SeekObjective
 
 /// <summary>
 /// Struct to hold flee objective data.
-/// esta de quien huye
 /// </summary>
 struct FleeObjective
 {
