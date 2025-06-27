@@ -56,6 +56,85 @@ void Boid::Arrive(const sf::Vector2f& target, float slowRadius)
 	m_position += m_direction;
 }
 
+sf::Vector2f Boid::PatrolLoop(sf::Vector2f position, const Path& path, size_t & currentwaypoint, float followforce )
+{
+	if (path.waypoints.empty()) return sf::Vector2f(0.0f, 0.0f);
+	sf::Vector2f target = path.waypoints[m_currentWaypoint];
+	sf::Vector2f origin = position;
+	
+	if (currentwaypoint > 0)
+	{
+		origin = path.waypoints[currentwaypoint - 1];
+	}
+
+	float distance = (target - position).length();
+
+	sf::Vector2f Vector_A = (target - origin);
+	sf::Vector2f Vector_B = (position - origin);
+
+	float escalar = (Vector_B.dot(Vector_A)) / (Vector_A.dot(Vector_A));
+	escalar = std::clamp(escalar, 0.0f, 1.0f);
+
+	sf::Vector2f NearestPointinLine = Vector_B + (Vector_A * escalar);
+
+	if (distance < path.radius)
+	{
+		currentwaypoint = (currentwaypoint + 1) % path.waypoints.size();
+	}
+	sf::Vector2f ForcetoTarget = Seek(position, target, followforce);
+	sf::Vector2f ForcetoLine = Seek(position, NearestPointinLine, followforce);
+
+
+	sf::Vector2f FinalForce = (ForcetoTarget + ForcetoLine).normalized() * followforce;
+
+	return FinalForce;
+
+}
+
+
+
+sf::Vector2f Boid::FollowPath(sf::Vector2f position , const Path &path , size_t &currentWaypoint, float FollowForce )
+{
+	if (path.waypoints.empty()) return sf::Vector2f(0, 0);
+
+	if (currentWaypoint >= path.waypoints.size()) return sf::Vector2f(0, 0);
+
+	sf::Vector2f target = path.waypoints[currentWaypoint];
+
+	sf::Vector2f origin = position;
+
+	if (currentWaypoint > 0 )
+		origin = path.waypoints[currentWaypoint - 1];
+
+	float distance = (target - position).length();
+
+	sf::Vector2f vector_B = (target - origin);
+
+	sf::Vector2f vector_A = (position - origin);
+
+	float escalar = (vector_A.dot(vector_B)) / (vector_B.dot(vector_B));
+
+	escalar = std::clamp(escalar, 0.0f, 1.0f);
+
+	sf::Vector2f NearestPointinLine = vector_A + (vector_B * escalar);
+
+	if (distance < path.radius)
+	{
+		if ( currentWaypoint < path.waypoints.size() - 1)
+
+			currentWaypoint++;
+	}
+
+	sf::Vector2f ForcetoTarget = Seek(position, target, FollowForce);
+
+	sf::Vector2f ForcetoLine = Seek(position, NearestPointinLine, FollowForce);
+
+	sf::Vector2f FinalForce = (ForcetoTarget + ForcetoLine).normalized() * FollowForce;
+
+	return FinalForce;
+	
+}
+
 void Boid::Update()
 {
 	//sf::Vector2f force(0, 0);

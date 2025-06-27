@@ -1,11 +1,17 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <vector>
 
 #include "VectorFloat.h"
 
-/// <summary>
-/// Struct to hold seek objective data.
-/// </summary>
+
+struct Path 
+{
+    std::vector<sf::Vector2f> waypoints;
+    float radius = 10.0f; 
+};
+
+
 struct SeekObjective
 {
     bool isActive = false;
@@ -15,9 +21,7 @@ struct SeekObjective
 
 };
 
-/// <summary>
-/// Struct to hold flee objective data.
-/// </summary>
+
 struct FleeObjective
 {
     bool isActive = false;
@@ -41,41 +45,24 @@ public:
 
     void Update();
 
-    /// <summary>
-	/// Sets the seek objective for the boid.
-    /// </summary>
-    /// <param name="seek"></param>
     void SetSeekObjective(SeekObjective& seek);
 
-    /// <summary>
-	/// Sets the flee objective for the boid.
-    /// </summary>
-    /// <param name="flee"></param>
     void SetFleeObjective(FleeObjective& flee);
 
-    /// <summary>
-	/// Sets the color of the boid entity.
-    /// </summary>
-    /// <param name=""></param>
+
     void SetColor(sf::Color);
 
-    /// <summary>
-	/// Sets the position of the boid in the world.
-    /// </summary>
-    /// <param name="position"></param>
     void SetPosition(const sf::Vector2f& position);
 
-    /// <summary>
-	/// Returns the position of the boid in the world.
-    /// </summary>
-    /// <param name="vectorsfml"></param>
-    /// <returns></returns>
     sf::Vector2f ConvertToVector2f(const sf::Vector2f& vectorsfml);
 
     sf::CircleShape getShape() const;
 
     void SetMass(float newMass);
 
+    size_t m_currentWaypoint;
+
+    sf::Vector2f FollowPath( sf::Vector2f position , const Path &path, size_t &currentWaypoint , float FollowForce);
 private:
 
     //___________ Seek Behaviors ___________
@@ -92,10 +79,7 @@ private:
 
     void Arrive(const sf::Vector2f& target, float slowRadius);
 
-    sf::Vector2f Patrol();
-
-    sf::Vector2f PatrolLoop();
-
+    sf::Vector2f PatrolLoop(sf::Vector2f position, const Path& path, size_t& currentwaypoint, float followforce);
 
 	//___________ Boid Properties ___________
     sf::Vector2f m_position = sf::Vector2f(0,0);
@@ -113,5 +97,6 @@ private:
     sf::CircleShape m_shape;
 
 
+    //___________ Path __________________
 };
 
