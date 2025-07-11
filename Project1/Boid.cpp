@@ -1,10 +1,26 @@
 #include "Boid.h"
 
+void Boid::SetRandomDirection()
+{
+	float force;
+
+	sf::Vector2f wanderPosition(rand() % 1280, rand() % 1000);
+
+	m_direction = wanderPosition.normalized();
+}
+
 sf::Vector2f Boid::Seek(const sf::Vector2f& position, const sf::Vector2f& target, float seekforce)
 {
 	sf::Vector2f force (0,0);
 
-	sf::Vector2f Desired = (target - position).normalized();
+	sf::Vector2f Desired = (target - position);
+
+
+	if (Desired.length() == 0.0f)
+	{
+		return force;
+	}
+	Desired = Desired.normalized();
 
 	force = Desired * seekforce;
 	return force;
@@ -25,7 +41,6 @@ const sf::Vector2f Boid::Flee (const sf::Vector2f& position,
 	sf::Vector2f Desired = diference.normalized();
 	force = Desired * fleeForce;
 	return force;
-
 }
 
 
@@ -33,7 +48,7 @@ sf::Vector2f Boid::Wander(float wanderForce)
 {
 	sf::Vector2f force = sf::Vector2f(0, 0);
 
-	sf::Vector2f wanderPosition(rand() % 1280, rand() % 720);
+	sf::Vector2f wanderPosition(rand() % 1280, rand() % 1000);
 
 	return Seek(m_position, wanderPosition, wanderForce);
 }
@@ -91,6 +106,74 @@ sf::Vector2f Boid::PatrolLoop(sf::Vector2f position, const Path& path, size_t & 
 
 }
 
+sf::Vector2f Boid::Direction(sf::Vector2f position,std::vector <Boid>* world, float distance, float DirectionForce)
+{
+	sf::Vector2f FinalDirection; 
+
+	float BoidsDistance;
+
+	for (int i = 0; i < world->size(); i++)
+	{
+		auto& pboid = world->at(i);
+
+		BoidsDistance =( pboid.GetPosition() - position).length();
+
+		if (BoidsDistance <= distance)
+		{
+			FinalDirection += pboid. GetDirection();
+		}
+	}
+
+	FinalDirection = FinalDirection.normalized() * DirectionForce;
+
+	return FinalDirection; 
+}
+
+sf::Vector2f Boid::Separation(std::vector<Boid>* world,float radius, float force)
+{
+	sf::Vector2f finalForce (0.0f,0.0f);
+
+	for (auto& boid : *world)
+	{
+		sf::Vector2f difference = m_position - boid.GetPosition();
+
+		float distance = difference.length();
+
+		if (distance < radius && distance > 0.0f)
+		{
+			float inverseDistance = 1.0f - (distance / radius);
+
+			difference = difference / distance;
+
+			finalForce += difference * force * inverseDistance;
+		}
+	}
+	return finalForce;
+}
+
+sf::Vector2f Boid::Cohesion(std::vector<Boid>* world, float radius, float force)
+{
+	sf::Vector2f massCenter(0.0f, 0.0f);
+
+	int count = 0;
+	for (auto& boid : *world)
+	{
+		sf::Vector2f difference = m_position - boid.GetPosition();
+
+		float distance = difference.length();
+
+		if (distance < radius && distance > 0.0f)
+		{
+			massCenter += boid.GetPosition();
+			count++;
+		}
+	}
+	if (count > 0)
+	{
+		massCenter /= static_cast<float> (count);
+	}
+	return Seek(m_position, massCenter, force);
+}
 
 
 sf::Vector2f Boid::FollowPath(sf::Vector2f position , const Path &path , size_t &currentWaypoint, float FollowForce )
@@ -116,29 +199,56 @@ sf::Vector2f Boid::FollowPath(sf::Vector2f position , const Path &path , size_t 
 
 	escalar = std::clamp(escalar, 0.0f, 1.0f);
 
-	sf::Vector2f NearestPointinLine = vector_A + (vector_B * escalar);
+	sf::Vector2f NearestPointinLine = origin + (vector_B * escalar);
 
-	if (distance < path.radius)
+	if (distance < m_radius)
 	{
-		if ( currentWaypoint < path.waypoints.size() - 1)
-
+		if (currentWaypoint < path.waypoints.size() - 1)
+		{
 			currentWaypoint++;
+		}
+		else if (path.ActiveLoop)
+		{
+			currentWaypoint = 0;
+		}
 	}
 
 	sf::Vector2f ForcetoTarget = Seek(position, target, FollowForce);
 
 	sf::Vector2f ForcetoLine = Seek(position, NearestPointinLine, FollowForce);
 
-	sf::Vector2f FinalForce = (ForcetoTarget + ForcetoLine).normalized() * FollowForce;
+	sf::Vector2f Addition = (ForcetoTarget + ForcetoLine);
+
+	if (Addition.length() > 0.0f)
+	{
+		Addition.normalized();
+	}
+
+	sf::Vector2f FinalForce = Addition * FollowForce;
 
 	return FinalForce;
 	
+}
+
+sf::Vector2f Boid::GetDirection()
+{
+	return m_direction;
+}
+
+sf::Vector2f Boid::GetPosition()
+{
+	return m_position;
 }
 
 void Boid::Update()
 {
 	//sf::Vector2f force(0, 0);
 	m_desired = sf::Vector2f(0, 0);
+
+	if (m_shape.getFillColor() == sf::Color::Green)
+	{
+		m_shape.setFillColor(sf::Color::White);
+	}
 
 	if (m_position.x < 0)
 	{
@@ -164,17 +274,48 @@ void Boid::Update()
 	{
 		 m_desired += Seek(m_position, m_seekObjective.target, m_seekObjective.seekforce);
 	}
+
 	if (m_fleeObjective.isActive)
 	{
 		m_desired += Flee(m_position, m_fleeObjective.target, 100, m_fleeObjective.fleeForce);
 		m_desired += Wander(3);
 	}
-	if (m_desired.length()> 0)
+
+	if (!m_path.waypoints.empty() && m_path.ActivePath)
 	{
-		m_direction += m_desired.normalized() * (1.0f / m_mass);
-		m_direction = m_direction.normalized();
-		m_position += m_direction * 0.3f;
+		m_desired += FollowPath(m_position, m_path, m_currentWaypoint, m_path.FollowForce);
 	}
+
+	//m_desired += Wander(5);
+
+	m_desired += Direction(m_position, m_BoidVectorP ,50,100);
+
+	m_desired += Separation(m_BoidVectorP, 50, 100);
+	
+	m_desired += Cohesion(m_BoidVectorP, 50, 100);
+
+	float desiredLenght = m_desired.length();
+
+	if (desiredLenght > 0.0f)
+	{
+		if (desiredLenght > 20.0f)
+		{
+			m_desired /= desiredLenght;
+			m_desired *= 20.0f * 0.16f;
+		}
+
+		if (m_speed < m_maxSpeed)
+		{
+			m_speed += 0.01f;
+			m_speed = std::min(m_speed, m_maxSpeed);
+		}
+		
+		m_direction += m_desired * (1.0f / m_mass);
+		m_direction = m_direction.normalized();
+		m_position += m_direction * m_speed * 0.16f;
+	}
+
+
 		m_shape.setPosition(m_position);
 }
 
@@ -192,6 +333,21 @@ void Boid::SetFleeObjective(FleeObjective& flee)
 	m_fleeObjective.fleeForce = flee.fleeForce;
 }
 
+void Boid::ActiveFollowPatch(Path& path)
+{
+	m_path.ActivePath = path.ActivePath;
+	m_radius = path.radius;
+	m_path.waypoints = path.waypoints;
+	m_currentWaypoint = 0;
+	m_path.FollowForce = path.FollowForce;
+	m_path.ActiveLoop = path.ActiveLoop;
+}
+
+void Boid::ActiveJoin(Wanders& wander)
+{
+	m_join = wander.JoinGoup;
+}
+
 
 void Boid::SetColor(sf::Color color) {
 	m_shape.setFillColor(color);
@@ -203,9 +359,9 @@ void Boid::SetPosition(const sf::Vector2f& position)
 	m_shape.setPosition(m_position);
 }
 
-sf::Vector2f Boid::ConvertToVector2f(const sf::Vector2f& vectorsfml)
+void Boid::SetPointer(std::vector<Boid>* pointervector)
 {
-	return { vectorsfml.x, vectorsfml.y };
+	m_BoidVectorP = pointervector;
 }
 
 sf::CircleShape Boid::getShape() const 
