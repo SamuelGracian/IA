@@ -175,6 +175,38 @@ sf::Vector2f Boid::Cohesion(std::vector<Boid>* world, float radius, float force)
 	return Seek(m_position, massCenter, force);
 }
 
+sf::Vector2f Boid::Obstacleavoidance(std::vector<Boid>* world, float avoidRadius, float force)
+{
+	sf::Vector2f avoidForce(0.0f, 0.0f);
+	float closestDistance = avoidRadius * avoidRadius;
+
+	for (auto&  boids : *world)
+	{
+		if (&boids == this) continue; 
+		sf::Vector2f difference = m_position - boids.GetPosition();
+
+		float sqrDistance = difference.x * difference.x + difference.y * difference.y;
+
+		float combinedRadius = avoidRadius + boids.m_radius;
+
+		if (sqrDistance< combinedRadius * combinedRadius)
+		{
+			closestDistance = sqrDistance;
+
+			float dist = std::sqrt(sqrDistance);
+
+			sf::Vector2f desired = difference / dist;
+
+			float strength = force * (1.0f - (dist / combinedRadius));
+
+			avoidForce = desired * strength;
+		}
+	}
+
+
+	return avoidForce;
+}
+
 
 sf::Vector2f Boid::FollowPath(sf::Vector2f position , const Path &path , size_t &currentWaypoint, float FollowForce )
 {
@@ -240,15 +272,25 @@ sf::Vector2f Boid::GetPosition()
 	return m_position;
 }
 
+void Boid::SetImage(const std::string imageFile)
+{
+	if (!m_texture.loadFromFile(imageFile))
+	{
+		std::cerr << "Error loading image: " << imageFile << std::endl;
+		return;
+	}
+	m_shape.setTexture(&m_texture);
+	m_shape.setRadius(10.0f);
+	m_shape.setOrigin(sf::Vector2f(10.0f, 10.0f));
+	m_shape.setFillColor(sf::Color::White);
+	m_shape.setPosition(m_position);
+}
+
 void Boid::Update()
 {
 	//sf::Vector2f force(0, 0);
 	m_desired = sf::Vector2f(0, 0);
 
-	if (m_shape.getFillColor() == sf::Color::Green)
-	{
-		m_shape.setFillColor(sf::Color::White);
-	}
 
 	if (m_position.x < 0)
 	{
@@ -257,7 +299,7 @@ void Boid::Update()
 
 	if (m_position.y < 0)
 	{
-		m_position.y = 720;
+		m_position.y = 1000;
 	}
 
 	if (m_position.x > 1280)
@@ -265,7 +307,7 @@ void Boid::Update()
 		m_position.x = 0;
 	}
 
-	if (m_position.y > 720)
+	if (m_position.y > 1000)
 	{
 		m_position.y = 0;
 	}
@@ -292,7 +334,12 @@ void Boid::Update()
 
 	m_desired += Separation(m_BoidVectorP, 50, 100);
 	
-	m_desired += Cohesion(m_BoidVectorP, 50, 100);
+	m_desired += Cohesion(m_BoidVectorP, m_radius, 100);
+
+	if (!m_BoidVectorP->empty())
+	{
+		m_desired += Obstacleavoidance(m_BoidVectorP, m_radius, 100);
+	}
 
 	float desiredLenght = m_desired.length();
 
@@ -324,6 +371,7 @@ void Boid::SetSeekObjective(SeekObjective& seek)
 	m_seekObjective.isActive = seek.isActive;
 	m_seekObjective.target = seek.target;
 	m_seekObjective.seekforce = seek.seekforce;
+	m_radius = seek.radius;
 }
 
 void Boid::SetFleeObjective(FleeObjective& flee)
@@ -331,6 +379,7 @@ void Boid::SetFleeObjective(FleeObjective& flee)
 	m_fleeObjective.isActive = flee.isActive;
 	m_fleeObjective.target = flee.target;
 	m_fleeObjective.fleeForce = flee.fleeForce;
+	m_radius = flee.radius;
 }
 
 void Boid::ActiveFollowPatch(Path& path)

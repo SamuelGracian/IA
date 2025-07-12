@@ -12,13 +12,13 @@ int main()
 	sf::RenderWindow window(sf::VideoMode({ 1280,1000 }), "Steering behaviors");
 
 	std::vector<Boid> BoidsVector;
-	BoidsVector.resize(20);
+	BoidsVector.resize(4);
 
 	Boid& SeekerBoid = BoidsVector[0];
 	Boid& FleeingBoid = BoidsVector[1];
 	Boid& PathBoid = BoidsVector[2];
 	Boid& LoopBoid = BoidsVector[3];
-	Boid& Direction = BoidsVector[4];
+
 
 
 	//Set colors for the boids
@@ -30,18 +30,16 @@ int main()
 
 	LoopBoid.SetColor(sf::Color::Green);
 
-	Direction.SetColor(sf::Color::Magenta);
 
 	//Set starting positions for the boids
 	SeekerBoid.SetPosition({ 500.0f, 500.0f });
 
 	FleeingBoid.SetPosition({ 300.0f, 300.0f });
 
-	PathBoid.SetPosition({ 100.0f, 100.0f });
+	PathBoid.SetPosition({ 600.0f, 100.0f });
 
 	LoopBoid.SetPosition({ 300.0f, 200.0f });
 
-	Direction.SetPosition({ 400.0f,300.0f });
 
 	//
 	for (auto& boid : BoidsVector)
@@ -53,14 +51,16 @@ int main()
 	SeekerBoid.SetMass(10);
 
 	SeekObjective seek;
-	seek.isActive = false;
+	seek.isActive = true;
 	seek.seekforce = 10.0f;
+	seek.radius = 10.0f;
 	seek.target = FleeingBoid.getShape().getPosition();
 	SeekerBoid.SetSeekObjective(seek);
 
 	FleeObjective flee;
-	flee.isActive = false;
+	flee.isActive = true;
 	flee.fleeForce = 10.0f;
+	flee.radius = 10.0f;
 	flee.target = SeekerBoid.getShape().getPosition();
 	FleeingBoid.SetFleeObjective(flee);
 
@@ -73,7 +73,7 @@ int main()
 	{ 500.0f, 200.0f },
 	{ 700.0f, 300.0f}
 	};
-	path.ActivePath = false;
+	path.ActivePath = true;
 	path.radius = 30;
 	path.FollowForce = 10.0f;
 	path.ActiveLoop = false;
@@ -87,10 +87,10 @@ int main()
 	{ 500.0f, 200.0f },
 	{ 700.0f, 300.0f}
 	};
-	loop.ActivePath = false;
+	loop.ActivePath = true;
 	loop.radius = 30;
 	loop.FollowForce = 10.0f;
-	loop.ActiveLoop = false;
+	loop.ActiveLoop = true;
 
 	PathBoid.ActiveFollowPatch(path);
 

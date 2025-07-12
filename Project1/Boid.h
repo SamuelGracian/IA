@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <vector>
+#include <iostream>
 
 #include "VectorFloat.h"
 
@@ -19,6 +20,7 @@ struct SeekObjective
 {
     bool isActive = false;
     float seekforce = 0.0f;
+    float radius = 0.0f;
     sf::Vector2f position = { 0.0f,0.0f };
     sf::Vector2f target = { 0.0f, 0.0f };
 };
@@ -27,8 +29,9 @@ struct SeekObjective
 struct FleeObjective
 {
     bool isActive = false;
-	sf::Vector2f target = { 0.0f, 0.0f };
 	float fleeForce = 0.0f;
+    float radius = 0.0f;
+	sf::Vector2f target = { 0.0f, 0.0f };
     sf::Vector2f Position = { 0.0f, 0.0f };
 
 };
@@ -76,6 +79,9 @@ public:
     sf::Vector2f GetDirection();
 
     sf::Vector2f GetPosition();
+
+    void SetImage(const std::string imageFile);
+
 private:
 
     void SetRandomDirection();
@@ -107,6 +113,8 @@ private:
 
     sf::Vector2f Cohesion(std::vector <Boid>* world, float radius, float force);
 
+	sf::Vector2f Obstacleavoidance(std::vector <Boid>* world, float radius, float force);
+
 	//___________ Boid Properties ___________
     sf::Vector2f m_position = sf::Vector2f(0,0);
     sf::Vector2f m_sf_target;
@@ -115,7 +123,7 @@ private:
     sf::Vector2f m_desired;
 
     float m_mass = 200;
-	int m_radius ;
+	int m_radius;
     float m_speed = 0.0f;
     float m_maxSpeed = 2.0f;
 	//___________ Seek Objectives ___________
@@ -123,6 +131,8 @@ private:
 	FleeObjective m_fleeObjective;
 	//___________ SFML variables ___________
     sf::CircleShape m_shape;
+	sf::Image m_image;
+	sf::Texture m_texture;
 
     //___________ Path _____________________
     Path m_path;
