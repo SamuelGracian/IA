@@ -5,6 +5,12 @@
 
 #include "VectorFloat.h"
 
+struct Obstacle 
+{
+    sf::Vector2f position;
+	sf::Color color;
+    float radius;
+};
 
 struct Path 
 {
@@ -36,20 +42,18 @@ struct FleeObjective
 
 };
 
-struct Wanders
-{
-    bool JoinGoup;
-};
 
 class Boid
 {
 public:
     Boid()
     {
-		m_shape.setRadius(20.0f);
-		m_shape.setFillColor(sf::Color::Green);
         SetRandomDirection();
         m_maxSpeed = 1.0f + float ((rand() % 10) / 10.0f);
+        m_shape.setRadius(m_radius);
+		m_shape.setOrigin(sf::Vector2f(m_radius, m_radius));
+        m_shape.setFillColor(m_color);
+        m_shape.setPosition(m_position);
     }
 
     virtual ~Boid() = default;
@@ -61,8 +65,6 @@ public:
     void SetFleeObjective(FleeObjective& flee);
 
     void ActiveFollowPatch(Path& path);
-
-    void ActiveJoin(Wanders& wander);
 
     void SetColor(sf::Color);
 
@@ -81,6 +83,12 @@ public:
     sf::Vector2f GetPosition();
 
     void SetImage(const std::string imageFile);
+
+    void AddObstacles(std::vector<Obstacle>* obstpointer);
+
+    float GetRadius();
+
+    sf::Color GetColor();
 
 private:
 
@@ -113,7 +121,8 @@ private:
 
     sf::Vector2f Cohesion(std::vector <Boid>* world, float radius, float force);
 
-	sf::Vector2f Obstacleavoidance(std::vector <Boid>* world, float radius, float force);
+	sf::Vector2f ObstacleAvoidance(const std::vector<Obstacle>* obstacles, float avoidRadius, float force);
+
 
 	//___________ Boid Properties ___________
     sf::Vector2f m_position = sf::Vector2f(0,0);
@@ -123,16 +132,16 @@ private:
     sf::Vector2f m_desired;
 
     float m_mass = 200;
-	int m_radius;
+	float m_radius;
     float m_speed = 0.0f;
     float m_maxSpeed = 2.0f;
 	//___________ Seek Objectives ___________
 	SeekObjective m_seekObjective;
 	FleeObjective m_fleeObjective;
 	//___________ SFML variables ___________
-    sf::CircleShape m_shape;
 	sf::Image m_image;
 	sf::Texture m_texture;
+    sf::Color m_color;
 
     //___________ Path _____________________
     Path m_path;
@@ -140,6 +149,9 @@ private:
     //__________ Follow Group ______________
     bool m_join;
 
-    std::vector<Boid>* m_BoidVectorP;
+    std::vector<Boid>* m_BoidVectorP = nullptr;
+	std::vector<Obstacle>* m_obstacles = nullptr;
+
+	sf::CircleShape m_shape;
 };
 
