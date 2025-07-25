@@ -22,7 +22,7 @@ int main()
 	Boid& SeekerBoid = BoidsVector[0];
 	Boid& FleeingBoid = BoidsVector[1];
 	Boid& PathBoid = BoidsVector[2];
-	Boid& LoopBoid = BoidsVector[0];
+	Boid& LoopBoid = BoidsVector[3];
 
 	//Set colors for the boids
 	SeekerBoid.SetColor(sf::Color::White);
@@ -44,6 +44,9 @@ int main()
 	LoopBoid.SetPosition({ 300.0f, 200.0f });
 
 
+	//Set texture
+	SeekerBoid.SetTexture("DespairFrog.png");
+
 	//
 	for (auto& boid : BoidsVector)
 	{
@@ -52,20 +55,20 @@ int main()
 	}
 
 	//set mass for the boids 
-	SeekerBoid.SetMass(10);
+	SeekerBoid.SetMass(1);
 
 	SeekObjective seek;
-	seek.isActive = false;
+	seek.isActive = true;
 	seek.seekforce = 10.0f;
-	seek.radius = 10.0f;
-	seek.target = FleeingBoid.getShape().getPosition();
+	seek.radius = 100.0f;
+	seek.target = FleeingBoid.GetPosition();
 	SeekerBoid.SetSeekObjective(seek);
 
 	FleeObjective flee;
 	flee.isActive = true;
 	flee.fleeForce = 10.0f;
 	flee.radius = 10.0f;
-	flee.target = SeekerBoid.getShape().getPosition();
+	flee.target = SeekerBoid.GetPosition();
 	FleeingBoid.SetFleeObjective(flee);
 
 	Path path;
@@ -91,10 +94,10 @@ int main()
 	{ 500.0f, 200.0f },
 	{ 700.0f, 300.0f}
 	};
-	loop.ActivePath = false;
+	loop.ActivePath = true;
 	loop.radius = 20.0f;
 	loop.FollowForce = 10.0f;
-	loop.ActiveLoop = false;
+	loop.ActiveLoop =true;
 
 	PathBoid.ActiveFollowPatch(path);
 
@@ -105,9 +108,9 @@ int main()
 
 	for (auto& obstacle : ObstacleVector)
 	{
-		obstacle.position = sf::Vector2f(500.0f, 500.0f);
+		obstacle.position = sf::Vector2f(800.0f, 200.0f);
 
-		obstacle.radius = 200.0f;
+		obstacle.radius = 100.0f;
 
 		obstacle.color = sf::Color::Magenta;
 	}
@@ -121,21 +124,27 @@ int main()
 		{
 			if (event->is<sf::Event::Closed>())
 			{
-				window.close();   
+				window.close();
 			}
 		}
 
-			seek.target = FleeingBoid.getShape().getPosition();
+			seek.target = FleeingBoid.GetPosition();
 			SeekerBoid.SetSeekObjective(seek);
 
-			flee.target = SeekerBoid.getShape().getPosition();
+			flee.target = SeekerBoid.GetPosition();
 			FleeingBoid.SetFleeObjective(flee);
 
 			window.clear();
+
 			for (auto& boid : BoidsVector)
 			{
+				sf::CircleShape circleShape;
+				circleShape.setRadius(boid.GetRadius());
+				circleShape.setFillColor(boid.GetColor());
+				circleShape.setTexture(boid.GetTexture());
 				boid.Update();
-				window.draw(boid.getShape());
+				circleShape.setPosition(boid.GetPosition());
+				window.draw(circleShape);
 			}
 
 			for (auto& obst : ObstacleVector)

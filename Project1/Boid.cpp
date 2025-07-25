@@ -190,7 +190,7 @@ sf::Vector2f Boid::ObstacleAvoidance(const std::vector<Obstacle>* obstacles, flo
 
 		float combinedRadius = radius + obstacle.radius;
 
-		if (distance < combinedRadius)
+		if (distance > 0 && distance < combinedRadius)
 		{
 
 			sf::Vector2f desired = difference / distance;
@@ -268,7 +268,7 @@ sf::Vector2f Boid::GetPosition()
 	return m_position;
 }
 
-void Boid::SetImage(const std::string imageFile)
+void Boid::SetTexture(const std::string imageFile)
 {
 	if (!m_texture.loadFromFile(imageFile))
 	{
@@ -290,6 +290,11 @@ float Boid::GetRadius()
 sf::Color Boid::GetColor()
 {
 	return m_color;
+}
+
+sf::Texture* Boid::GetTexture()
+{
+	return &m_texture;
 }
 
 void Boid::Update()
@@ -366,7 +371,12 @@ void Boid::Update()
 		m_position += m_direction * m_speed * 0.16f;
 	}
 
-	m_shape.setPosition(m_position);
+
+	if (m_direction.length() > 0.0f)
+	{
+		m_direction = m_direction.normalized();
+	}
+	//m_shape.setPosition(m_position);
 }
 
 void Boid::SetSeekObjective(SeekObjective& seek)
@@ -397,12 +407,12 @@ void Boid::ActiveFollowPatch(Path& path)
 
 void Boid::SetColor(sf::Color color) {
     m_color = color;
-    m_shape.setFillColor(color);
+    //m_shape.setFillColor(color);
 }
 
 void Boid::SetPosition(const sf::Vector2f& position) {
     m_position = position;
-    m_shape.setPosition(m_position);
+    //m_shape.setPosition(m_position);
 }
 
 void Boid::SetPointer(std::vector<Boid>* pointervector)
@@ -410,9 +420,9 @@ void Boid::SetPointer(std::vector<Boid>* pointervector)
 	m_BoidVectorP = pointervector;
 }
 
-sf::CircleShape Boid::getShape() const {
-    return m_shape;
-}
+//sf::CircleShape Boid::getShape() const {
+//    return m_shape;
+//}
 
 void Boid::SetMass(float newMass)
 {

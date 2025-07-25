@@ -50,10 +50,6 @@ public:
     {
         SetRandomDirection();
         m_maxSpeed = 1.0f + float ((rand() % 10) / 10.0f);
-        m_shape.setRadius(m_radius);
-		m_shape.setOrigin(sf::Vector2f(m_radius, m_radius));
-        m_shape.setFillColor(m_color);
-        m_shape.setPosition(m_position);
     }
 
     virtual ~Boid() = default;
@@ -72,7 +68,7 @@ public:
 
     void SetPointer(std::vector<Boid>* pointervector);
 
-    sf::CircleShape getShape() const;
+    //sf::CircleShape getShape() const;
 
     void SetMass(float newMass);
 
@@ -82,13 +78,15 @@ public:
 
     sf::Vector2f GetPosition();
 
-    void SetImage(const std::string imageFile);
+    void SetTexture(const std::string imageFile);
 
     void AddObstacles(std::vector<Obstacle>* obstpointer);
 
     float GetRadius();
 
     sf::Color GetColor();
+
+    sf::Texture* GetTexture();
 
 private:
 
@@ -132,7 +130,7 @@ private:
     sf::Vector2f m_desired;
 
     float m_mass = 200;
-	float m_radius;
+    float m_radius = 10;
     float m_speed = 0.0f;
     float m_maxSpeed = 2.0f;
 	//___________ Seek Objectives ___________
@@ -150,8 +148,9 @@ private:
     bool m_join;
 
     std::vector<Boid>* m_BoidVectorP = nullptr;
+
 	std::vector<Obstacle>* m_obstacles = nullptr;
 
-	sf::CircleShape m_shape;
+	//sf::CircleShape m_shape;
 };
 
