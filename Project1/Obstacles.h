@@ -11,6 +11,10 @@ public:
 	void Update();
 
 	void SetTexture( const std::string file);
+	
+	const float GetRadius()const;
+	const sf::Color GetColor() const;
+	const sf::Vector2f GetPosition() const;
 
 private:
 	sf::Vector2f m_position;
