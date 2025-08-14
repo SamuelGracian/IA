@@ -8,7 +8,7 @@ public:
 		m_position(position), m_color(color), m_radius(radius)
 	{}
 
-	void Update();
+	void Update() {}
 
 	void SetTexture( const std::string file);
 	

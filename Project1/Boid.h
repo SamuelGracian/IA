@@ -3,44 +3,11 @@
 #include <vector>
 #include <iostream>
 
+#include "Path.h"
+#include "Obstacles.h"
+#include "SeekObjective.h"
+#include "FleeObjective.h"
 #include "VectorFloat.h"
-
-struct Obstacle 
-{
-    sf::Vector2f position;
-	sf::Color color;
-    float radius;
-};
-
-struct Path 
-{
-    std::vector<sf::Vector2f> waypoints;
-    float radius = 10.0f;
-    bool ActivePath;
-    bool ActiveLoop;
-    float FollowForce = 0.0f;
-};
-
-
-struct SeekObjective
-{
-    bool isActive = false;
-    float seekforce = 0.0f;
-    float radius = 0.0f;
-    sf::Vector2f position = { 0.0f,0.0f };
-    sf::Vector2f target = { 0.0f, 0.0f };
-};
-
-
-struct FleeObjective
-{
-    bool isActive = false;
-	float fleeForce = 0.0f;
-    float radius = 0.0f;
-	sf::Vector2f target = { 0.0f, 0.0f };
-    sf::Vector2f Position = { 0.0f, 0.0f };
-
-};
 
 
 class Boid
@@ -80,7 +47,7 @@ public:
 
     void SetTexture(const std::string imageFile);
 
-    void AddObstacles(std::vector<Obstacle>* obstpointer);
+    void AddObstacles(std::vector<Obstacles>* obstpointer);
 
     float GetRadius();
 
@@ -119,7 +86,7 @@ private:
 
     sf::Vector2f Cohesion(std::vector <Boid>* world, float radius, float force);
 
-	sf::Vector2f ObstacleAvoidance(const std::vector<Obstacle>* obstacles, float avoidRadius, float force);
+	sf::Vector2f ObstacleAvoidance(const std::vector<Obstacles>* obstacles, float avoidRadius, float force);
 
 
 	//___________ Boid Properties ___________
@@ -149,7 +116,7 @@ private:
 
     std::vector<Boid>* m_BoidVectorP = nullptr;
 
-	std::vector<Obstacle>* m_obstacles = nullptr;
+	std::vector<Obstacles>* m_obstacles = nullptr;
 
 	//sf::CircleShape m_shape;
 };

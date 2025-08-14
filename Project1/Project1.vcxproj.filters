@@ -30,6 +30,12 @@
     <ClInclude Include="Obstacles.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SeekObjective.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FleeObjective.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SeekBehaviours.cpp">
@@ -52,6 +58,9 @@
     </ClCompile>
     <ClCompile Include="world.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Path.h">
+      <Filter>Header Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

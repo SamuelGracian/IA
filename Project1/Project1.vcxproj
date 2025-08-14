@@ -152,14 +152,17 @@ sfml-system.lib;%(AdditionalDependencies)</AdditionalDependencies>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Boid.h" />
+    <ClInclude Include="FleeObjective.h" />
     <ClInclude Include="Obstacles.h" />
     <ClInclude Include="SeekBehaviours.h" />
+    <ClInclude Include="SeekObjective.h" />
     <ClInclude Include="VectorFloat.h" />
     <ClInclude Include="world.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Boid.cpp" />
     <ClCompile Include="Obstacles.cpp" />
+    <ClCompile Include="Path.h" />
     <ClCompile Include="SeekBehaviours.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="VectorFloat.cpp" />

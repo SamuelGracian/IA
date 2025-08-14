@@ -175,7 +175,7 @@ sf::Vector2f Boid::Cohesion(std::vector<Boid>* world, float radius, float force)
 	return Seek(m_position, massCenter, force);
 }
 
-sf::Vector2f Boid::ObstacleAvoidance(const std::vector<Obstacle>* obstacles, float radius, float force)
+sf::Vector2f Boid::ObstacleAvoidance(const std::vector<Obstacles>* obstacles, float radius, float force)
 {
 	sf::Vector2f avoidForce(0.0f, 0.0f);
 
@@ -184,11 +184,11 @@ sf::Vector2f Boid::ObstacleAvoidance(const std::vector<Obstacle>* obstacles, flo
 	for (const auto& obstacle : *obstacles)
 	{
 
-		sf::Vector2f difference = m_position - obstacle.position;
+		sf::Vector2f difference = m_position - obstacle.GetPosition();
 
 		float distance = difference.length();
 
-		float combinedRadius = radius + obstacle.radius;
+		float combinedRadius = radius + obstacle.GetRadius();
 
 		if (distance > 0 && distance < combinedRadius)
 		{
@@ -277,7 +277,7 @@ void Boid::SetTexture(const std::string imageFile)
 	}
 }
 
-void Boid::AddObstacles(std::vector<Obstacle>* obstpointer)
+void Boid::AddObstacles(std::vector<Obstacles>* obstpointer)
 {
 	m_obstacles = obstpointer;
 }
